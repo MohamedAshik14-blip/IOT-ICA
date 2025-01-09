@@ -54,3 +54,42 @@ def token_required(f):
 
         return f(current_user, *args, **kwargs)
     return decorated_function
+
+@app.route("/api/register", methods=["POST"])
+def register():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"message": "Username and password are required"}), 400
+
+    if user_collection.find_one({"username": username}):
+        return jsonify({"message": "User already exists"}), 400
+
+    hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
+    user_collection.insert_one({"username": username, "password": hashed_password})
+
+    return jsonify({"message": "User registered successfully"}), 201
+
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"message": "Username and password are required"}), 400
+
+    user = user_collection.find_one({"username": username})
+    if not user or not check_password_hash(user["password"], password):
+        return jsonify({"message": "Invalid credentials"}), 401
+
+    
+    token = jwt.encode(
+        {"user_id": str(user["_id"]), "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)},
+        app.config["SECRET_KEY"],
+        algorithm="HS256"
+    )
+    return jsonify({"token": token}), 200
