@@ -56,3 +56,40 @@ useEffect(() => {
       alert("Error occurred");
     }
   };
+
+    return (
+    <div className="App">
+ {!isAuthenticated ? (
+        <div className="auth-container">
+          <h2>{isRegister ? "Register" : "Login"}</h2>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            className="btn primary"
+            onClick={() =>
+              handleAuth(isRegister ? "register" : "login", isRegister ? "Registered successfully!" : "Logged in successfully!")
+            }
+          >
+            {isRegister ? "Register" : "Login"}
+          </button>
+          <p className="toggle-auth" onClick={() => setIsRegister(!isRegister)}>
+            {isRegister ? "Switch to Login" : "Switch to Register"}
+          </p>
+        </div>
+      ) : (
+        <>
+ </div>
+  );
+}
+
+export default App;
