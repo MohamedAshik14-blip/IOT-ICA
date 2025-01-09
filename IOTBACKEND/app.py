@@ -93,3 +93,14 @@ def login():
         algorithm="HS256"
     )
     return jsonify({"token": token}), 200
+
+if __name__ == "__main__":
+    try:
+        
+        mongo.cx.admin.command('ping')
+        logging.info("Connected to MongoDB successfully.")
+    except Exception as e:
+        logging.error(f"Could not connect to MongoDB: {str(e)}")
+        exit(1)
+
+    app.run(debug=True, host="0.0.0.0", port=3001)
