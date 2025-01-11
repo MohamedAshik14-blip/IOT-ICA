@@ -114,6 +114,22 @@ def get_history(current_user):
     ]
     return jsonify(result), 200
 
+@app.route("/api/led", methods=["POST"])
+@token_required
+def control_led(current_user):
+    data = request.get_json()
+    action = data.get("action") 
+
+    if action not in ["on", "off"]:
+        return jsonify({"message": "Invalid action. Must be 'on' or 'off'."}), 400
+
+  
+    message = {"action": action}
+    pubnub.publish().channel("Temperature-App").message(message).sync()
+
+    return jsonify({"message": f"LED action '{action}' message sent to Raspberry Pi."}), 200
+
+
 if __name__ == "__main__":
     try:
         
