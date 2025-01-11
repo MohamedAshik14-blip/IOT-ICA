@@ -94,6 +94,26 @@ def login():
     )
     return jsonify({"token": token}), 200
 
+@app.route("/api/temperatures", methods=["GET"])
+@token_required
+def get_temperature(current_user):
+    latest = temperature_collection.find_one(sort=[("timestamp", -1)])
+    if latest:
+        latest["_id"] = str(latest["_id"]) 
+        return jsonify(latest), 200
+    return jsonify({"message": "No data found"}), 404
+
+
+@app.route("/api/history", methods=["GET"])
+@token_required
+def get_history(current_user):
+    history = temperature_collection.find().sort("timestamp", -1).limit(50)
+    result = [
+        {key: (str(value) if isinstance(value, ObjectId) else value) for key, value in record.items()}
+        for record in history
+    ]
+    return jsonify(result), 200
+
 if __name__ == "__main__":
     try:
         
