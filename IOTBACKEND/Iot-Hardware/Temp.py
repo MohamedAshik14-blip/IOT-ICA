@@ -31,6 +31,8 @@ GPIO.setup(led_pin, GPIO.OUT)
 
 
 TEMP_THRESHOLD = 10 
+LIGHT_LOW_THRESHOLD = 0 
+LIGHT_HIGH_THRESHOLD = 1 
 
 MAX_RETRIES = 5 
 retry_delay = 5 
@@ -46,6 +48,40 @@ pubnub = PubNub(pnconfig)
 
 channel = "Temperature-App" 
 
+
+led_state = "off" 
+last_pubnub_message_time = None 
+led_timer_start = None 
+led_timer_active = False 
+
+
+class MySubscribeCallback(SubscribeCallback):
+    def message(self, pubnub, message):
+        global led_state, last_pubnub_message_time, led_timer_start, led_timer_active
+
+        data = message.message
+        if "action" in data:
+            action = data["action"]
+
+         
+            if action == "off":
+                led_state = "off"
+                led_timer_start = datetime.datetime.now(datetime.timezone.utc)
+                led_timer_active = True
+                print("LED turned OFF by PubNub message. Timer started.")
+                GPIO.output(led_pin, GPIO.LOW) 
+
+        
+            elif action == "on":
+                led_state = "on"
+                led_timer_start = datetime.datetime.now(datetime.timezone.utc)
+                led_timer_active = True
+                print("LED turned ON by PubNub message. Timer started.")
+                GPIO.output(led_pin, GPIO.HIGH) 
+
+
+pubnub.add_listener(MySubscribeCallback())
+pubnub.subscribe().channels(channel).execute()
 
 print("Reading from DHT11 sensor and LDR (Press Ctrl+C to exit)...")
 
@@ -76,7 +112,14 @@ try:
         if retries == MAX_RETRIES:
             print("Exceeded maximum retries. Check sensor wiring or placement.")
             break
- data = {
+
+      
+        light_level = GPIO.input(ldr_pin)
+        light_status = "Low" if light_level == LIGHT_LOW_THRESHOLD else "High"
+        print(f"Light level: {light_status}")
+
+       
+        data = {
             "temperature": temperature_c,
             "humidity": humidity,
             "light_level": light_status,
