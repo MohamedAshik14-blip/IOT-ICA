@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="logo1.png" />
+  <title>Temperature and Light Monitor</title>
+  <link rel="stylesheet" href="App.css">
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+ 
+  <script src="https://cdn.jsdelivr.net/npm/pubnub@4.30.0/dist/web/pubnub.min.js"></script>
+<style>
+  
+
+
+
+
+</style>
+</head>
+
+<body>
+  <div class="App">
+  
+    <header class="App-header">
+      <div class="nav-bar">
+        <img src="logo1.png" alt="Temp2L Logo" class="logo">
+        <div class="pp1">
+          <h1>Temperature and Light Monitor</h1>
+        </div>
+        <nav>
+      
+          <button class="nav-btn" id="view-history-btn" style="display:none;">View Temperature History</button>
+          <button class="nav-btn" id="logout-btn" style="display:none;">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+  
+     <div id="auth-page" class="auth-container">
+      <h2 id="auth-header">Login</h2>
+      <form id="auth-form">
+        <input type="text" placeholder="Username" id="username" required>
+        <input type="password" placeholder="Password" id="password" required>
+        <button type="button" class="btn primary" id="auth-btn">Login</button>
+      </form>
+      <p class="toggle-auth" id="toggle-auth">Switch to Register</p>
+    </div>
+
+    
+    <div id="main-page" class="dashboard" style="display: none;">
+      <div class="image-container">
+        <img src="img.jpg" alt="Temperature and Humidity Monitoring" class="main-image">
+      </div>
+
+      </body>
+
+</html>
