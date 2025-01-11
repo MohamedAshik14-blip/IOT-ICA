@@ -30,7 +30,17 @@ mongo = PyMongo(app, serverSelectionTimeoutMS=5000)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}}, expose_headers=["Authorization"])
 
 
-logging.basicConfig(level=logging.INFO).  temperature_collection = mongo.db.temperatures
+logging.basicConfig(level=logging.INFO)
+
+pnconfig = PNConfiguration()
+pnconfig.subscribe_key = os.getenv("PUBNUB_SUBSCRIBE_KEY", "sub-c-6963e588-282e-41ec-8194-9b6710e52ad3")
+pnconfig.publish_key = os.getenv("PUBNUB_PUBLISH_KEY", "pub-c-45bab202-c191-4fbe-a1d0-2628df540689")
+pnconfig.secret_key = os.getenv("PUBNUB_SECRET_KEY", "sec-c-MmM5ZTI3YjEtOGU5NC00YzY4LTk0NjYtZWI0MTUyYjlkMGY0")
+pnconfig.user_id = os.getenv("PUBNUB_USER_ID", "temperature-subscriber")
+pubnub = PubNub(pnconfig)
+
+
+temperature_collection = mongo.db.temperatures
 user_collection = mongo.db.users
 
 def token_required(f):
@@ -128,6 +138,25 @@ def control_led(current_user):
     pubnub.publish().channel("Temperature-App").message(message).sync()
 
     return jsonify({"message": f"LED action '{action}' message sent to Raspberry Pi."}), 200
+
+class MySubscribeCallback(SubscribeCallback):
+    def message(self, pubnub, message):
+        try:
+            data = message.message
+            if "temperature" in data and "humidity" in data:
+                temperature_data = {
+                    "temperature": data["temperature"],
+                    "humidity": data["humidity"],
+                    "timestamp": datetime.datetime.now(datetime.timezone.utc)
+                }
+                temperature_collection.insert_one(temperature_data)
+                logging.info("Data saved to MongoDB")
+        except Exception as e:
+            logging.error(f"Error saving data from PubNub: {str(e)}")
+
+
+pubnub.add_listener(MySubscribeCallback())
+pubnub.subscribe().channels("Temperature-App").execute()
 
 
 if __name__ == "__main__":
