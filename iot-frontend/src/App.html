@@ -59,6 +59,71 @@
         <img src="img.jpg" alt="Temperature and Humidity Monitoring" class="main-image">
       </div>
 
+  <section class="sensor-info">
+        <h2>Our Sensors</h2>
+        <div class="sensor-card">
+          <img src="dht11.jpg" alt="DHT11 Sensor" class="sensor-image">
+          <div class="sensor-description">
+            <h3>DHT11 Sensor</h3>
+            <p>Measures temperature and humidity. Ideal for indoor environments.</p>
+          </div>
+        </div>
+        <div class="sensor-card">
+          <img src="ldr.jpg" alt="LDR Sensor" class="sensor-image">
+          <div class="sensor-description">
+            <h3>LDR Sensor</h3>
+            <p>Measures light intensity. Useful for automatic lighting systems.</p>
+          </div>
+        </div>
+        <div class="sensor-card">
+          <img src="led.jpg" alt="LED Sensor" class="sensor-image">
+          <div class="sensor-description">
+            <h3>LED</h3>
+            <p>Used for displaying light indicators.</p>
+          </div>
+        </div>
+        <div class="sensor-card">
+          <img src="resistor.jpg" alt="Resistor" class="sensor-image">
+          <div class="sensor-description">
+            <h3>Resistor</h3>
+            <p>Resists electrical current and limits voltage.</p>
+          </div>
+        </div>
+      </section>
+
+      <h1>Temperature and Humidity Monitor</h1>
+      <section class="data-section">
+        <h2>Latest Data</h2>
+        <div class="temperature-icon left glow">
+          <i class="fas fa-thermometer-half"></i>
+        </div>
+        <div class="temperature-icon right glow glowTemp">
+          <i class="fas fa-thermometer-half"></i>
+        </div>
+        <div>
+          <p>Temperature: <span id="latest-temp">Loading...</span>°C</p>
+          <p>Humidity: <span id="latest-humidity">Loading...</span>%</p>
+          <p>Timestamp: <span id="latest-timestamp">Loading...</span></p>
+        </div>
+      </section>
+
+      <section class="history-section" style="display: none;">
+        <h2>Temperature History</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Temperature (°C)</th>
+              <th>Humidity (%)</th>
+            </tr>
+          </thead>
+          <tbody id="history-table-body">
+          </tbody>
+        </table>
+      </section>
+
+
+      
       </body>
 
 </html>
