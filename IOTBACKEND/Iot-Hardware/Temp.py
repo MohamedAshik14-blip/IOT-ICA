@@ -1,3 +1,4 @@
+
 import time
 import adafruit_dht
 import board
@@ -127,3 +128,47 @@ try:
         }
         pubnub.publish().channel(channel).message(data).sync()
         print(f"Published data to PubNub: {data}")
+
+ if led_timer_active:
+            time_elapsed = (datetime.datetime.now(datetime.timezone.utc) - led_timer_start).total_seconds()
+            if time_elapsed >= 60: 
+             
+                led_timer_active = False
+                print("1-minute timer expired. Resuming control based on actual condition.")
+                if temperature_c < TEMP_THRESHOLD and light_level == LIGHT_LOW_THRESHOLD:
+                    print(f"Conditions met! Turning on the LED.")
+                    GPIO.output(led_pin, GPIO.HIGH)
+                    led_state = "on"  
+                else:
+                    print("Conditions not met. Turning off the LED.")
+                    GPIO.output(led_pin, GPIO.LOW) 
+                    led_state = "off"
+        else:
+       
+            if temperature_c < TEMP_THRESHOLD and light_level == LIGHT_LOW_THRESHOLD:
+                print(f"Conditions met! Turning on the LED.")
+                GPIO.output(led_pin, GPIO.HIGH) 
+                led_state = "on" 
+            else:
+                print("Conditions not met. Turning off the LED.")
+                GPIO.output(led_pin, GPIO.LOW) 
+                led_state = "off"  
+
+       
+        time.sleep(5) 
+
+except KeyboardInterrupt:
+    print("\nExiting due to user interruption.")
+
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")
+finally:
+    print(f"\nTotal successful reads: {successful_reads}")
+   
+    GPIO.cleanup()
+    dht_device.exit()
+    print("Resources cleaned up. Exiting.")
+
+
+
+
