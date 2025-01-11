@@ -104,6 +104,7 @@ def login():
     )
     return jsonify({"token": token}), 200
 
+
 @app.route("/api/temperatures", methods=["GET"])
 @token_required
 def get_temperature(current_user):
@@ -124,6 +125,7 @@ def get_history(current_user):
     ]
     return jsonify(result), 200
 
+
 @app.route("/api/led", methods=["POST"])
 @token_required
 def control_led(current_user):
@@ -138,6 +140,7 @@ def control_led(current_user):
     pubnub.publish().channel("Temperature-App").message(message).sync()
 
     return jsonify({"message": f"LED action '{action}' message sent to Raspberry Pi."}), 200
+
 
 class MySubscribeCallback(SubscribeCallback):
     def message(self, pubnub, message):
