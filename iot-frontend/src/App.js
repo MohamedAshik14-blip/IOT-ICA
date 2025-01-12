@@ -68,9 +68,53 @@
             });
           }
         },
-      }); 
+      });
 
-   toggleAuthLink.addEventListener("click", () => {
+      const updateLatestData = (data) => {
+        document.getElementById("latest-temp").innerText = data.temperature;
+        document.getElementById("latest-humidity").innerText = data.humidity;
+        document.getElementById("latest-timestamp").innerText = data.timestamp;
+      };
+
+  
+      const fetchData = async () => {
+        if (isAuthenticated) {
+          try {
+            const response = await fetch(`${API_BASE_URL}/api/temperatures`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const latestResponse = await response.json();
+            updateLatestData(latestResponse);
+
+            const historyResponse = await fetch(`${API_BASE_URL}/api/history`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const historyResponseData = await historyResponse.json();
+            historyData = historyResponseData;
+            updateHistoryTable();
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        }
+      };
+
+     
+      const updateHistoryTable = () => {
+        const historyTableBody = document.getElementById("history-table-body");
+        historyTableBody.innerHTML = historyData
+          .map(
+            (record) => `
+            <tr>
+              <td>${record.timestamp}</td>
+              <td>${record.temperature}</td>
+              <td>${record.humidity}</td>
+            </tr>`
+          )
+          .join("");
+      };
+
+    
+     toggleAuthLink.addEventListener("click", () => {
       const isLoginForm = authBtn.textContent === "Login";
       authBtn.textContent = isLoginForm ? "Register" : "Login";
       document.getElementById("auth-header").textContent = isLoginForm ? "Register" : "Login";
@@ -127,54 +171,15 @@
           console.error("Authentication error:", error);
         }
       };
-	 const updateLatestData = (data) => {
-        document.getElementById("latest-temp").innerText = data.temperature;
-        document.getElementById("latest-humidity").innerText = data.humidity;
-        document.getElementById("latest-timestamp").innerText = data.timestamp;
-      };
-
-  
-      const fetchData = async () => {
-        if (isAuthenticated) {
-          try {
-            const response = await fetch(`${API_BASE_URL}/api/temperatures`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const latestResponse = await response.json();
-            updateLatestData(latestResponse);
-
-            const historyResponse = await fetch(`${API_BASE_URL}/api/history`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const historyResponseData = await historyResponse.json();
-            historyData = historyResponseData;
-            updateHistoryTable();
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
-        }
-      };
-
-     
-      const updateHistoryTable = () => {
-        const historyTableBody = document.getElementById("history-table-body");
-        historyTableBody.innerHTML = historyData
-          .map(
-            (record) => `
-            <tr>
-              <td>${record.timestamp}</td>
-              <td>${record.temperature}</td>
-              <td>${record.humidity}</td>
-            </tr>`
-          )
-          .join("");
-      };
-	  document.getElementById("view-history-btn").addEventListener("click", () => {
+    
+       document.getElementById("view-history-btn").addEventListener("click", () => {
         const historySection = document.querySelector(".history-section");
         historySection.style.display = historySection.style.display === "none" ? "block" : "none";
       });
 
-	  document.getElementById("logout-btn").addEventListener("click", () => {
+
+      
+      document.getElementById("logout-btn").addEventListener("click", () => {
         isAuthenticated = false;
         token = "";
         authContainer.style.display = "block";
@@ -185,4 +190,3 @@
       });
 
     });
-    
