@@ -116,4 +116,16 @@ document.addEventListener("DOMContentLoaded", () => {
           )
           .join("");
       };
+
+	  document.getElementById("logout-btn").addEventListener("click", () => {
+        isAuthenticated = false;
+        token = "";
+        authContainer.style.display = "block";
+        dashboardContainer.style.display = "none";
+        document.getElementById("footer").style.display = "none"; 
+        document.getElementById("view-history-btn").style.display = "none"; 
+        document.getElementById("logout-btn").style.display = "none"; 
+      });
+
+    });
     
