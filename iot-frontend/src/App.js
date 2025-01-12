@@ -116,6 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
           )
           .join("");
       };
+	  document.getElementById("view-history-btn").addEventListener("click", () => {
+        const historySection = document.querySelector(".history-section");
+        historySection.style.display = historySection.style.display === "none" ? "block" : "none";
+      });
 
 	  document.getElementById("logout-btn").addEventListener("click", () => {
         isAuthenticated = false;
