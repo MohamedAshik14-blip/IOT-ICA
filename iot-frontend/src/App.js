@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+ document.addEventListener("DOMContentLoaded", () => {
       const API_BASE_URL = "http://localhost:3001";
       const pubnub = new PubNub({
         publishKey: "pub-c-45bab202-c191-4fbe-a1d0-2628df540689",
@@ -15,7 +15,60 @@ document.addEventListener("DOMContentLoaded", () => {
       const passwordInput = document.getElementById("password");
       const toggleAuthLink = document.getElementById("toggle-auth");
       const authContainer = document.querySelector(".auth-container");
-      const dashboardContainer = document.querySelector(".dashboard");                   
+      const dashboardContainer = document.querySelector(".dashboard");
+
+      const ledControlBtn = document.getElementById("led-control-btn");
+      const ledStatusText = document.getElementById("led-status");
+      const ledLeftIcon = document.getElementById("led-left-icon");
+      const ledRightIcon = document.getElementById("led-right-icon");
+      let ledStatus = "off";
+     
+
+     
+      ledControlBtn.addEventListener("click", async () => {
+        const action = ledStatus === "on" ? "off" : "on";
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/led`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ action }),
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            ledStatus = action;
+            ledControlBtn.textContent = ledStatus === "on" ? "Turn LED Off" : "Turn LED On";
+            ledStatusText.textContent = `LED is ${ledStatus}`;
+            ledLeftIcon.classList.toggle("glow", ledStatus === "on");
+            ledRightIcon.classList.toggle("glow", ledStatus === "on");
+            ledControlBtn.classList.toggle("glow-on", ledStatus === "on");
+          } else {
+            alert(data.message || "Error controlling LED");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Error controlling LED");
+        }
+      });
+
+     
+      pubnub.subscribe({ channels: ["Temperature-App"] });
+
+      pubnub.addListener({
+        message: (messageEvent) => {
+          const data = messageEvent.message;
+          if (data.temperature && data.humidity) {
+            updateLatestData({
+              temperature: data.temperature,
+              humidity: data.humidity,
+              timestamp: new Date().toLocaleString(),
+            });
+          }
+        },
+      }); 
 
    toggleAuthLink.addEventListener("click", () => {
       const isLoginForm = authBtn.textContent === "Login";
